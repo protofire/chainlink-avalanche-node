@@ -1,0 +1,27 @@
+# docker run -p 6688:6688 -v ~/.chainlink-avlanche:/chainlink -it --env-file=.env --network host smartcontract/chainlink:latest local n
+version: "3.5"
+services:
+  chainlink:
+    image: smartcontract/chainlink:latest
+    depends_on:
+      - chainlink-db
+      - chainlink-external-cryptocompare
+    ports:
+      - "6688:6688"
+    volumes:
+      - ./data:/chainlink
+    env_file:
+        - .env.chainlink
+    command: local n -p /chainlink/password -a /chainlink/api
+  chainlink-db:
+    image: postgres:9
+    env_file:
+        - .env.postgres
+    ports:
+      - "5432:5432"
+  chainlink-external-cryptocompare:
+    image: cryptocompare-adapter:latest
+    ports:
+      - "8080:8080"
+    environment:
+      API_KEY: 8fd4c492d34fb15ff7dcfd629be49cf4dd0aea136704d9a81100911c702e1391
